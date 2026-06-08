@@ -11,12 +11,13 @@ declare(strict_types=1);
  * unit-only mode — see tests/bootstrap.php, which defines XOOPS_OVERLAY_INTEGRATION.
  *
  * Defined in the global namespace and required by tests/bootstrap.php so it is
- * available without any PSR-4 mapping. Use it with `use RequiresXoops;`.
+ * available without any PSR-4 mapping. In a namespaced test, reference it with the
+ * leading backslash: `use \RequiresXoops;`.
  *
  * Example:
  *     final class HandlerTest extends \PHPUnit\Framework\TestCase
  *     {
- *         use RequiresXoops;
+ *         use \RequiresXoops;
  *
  *         protected function setUp(): void
  *         {

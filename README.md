@@ -75,13 +75,14 @@ with `cs:fix` / `rector:fix`, never auto-committed to your branch by CI.
 - **Unit-only** (default locally and in plain CI): no XOOPS runtime needed; just
   Composer autoload. Put pure tests in `tests/Unit/`.
 - **Integration**: when a configured XOOPS is reachable, the bootstrap boots it.
-  Integration tests should `use RequiresXoops;` and call `$this->requiresXoops()`
+  Integration tests should `use \RequiresXoops;` (the trait is in the global namespace, so
+  the leading backslash matters in a namespaced test class) and call `$this->requiresXoops()`
   so they self-skip when no XOOPS runtime is present (instead of failing):
 
   ```php
   final class HandlerTest extends \PHPUnit\Framework\TestCase
   {
-      use RequiresXoops;
+      use \RequiresXoops;
 
       protected function setUp(): void
       {
@@ -103,8 +104,8 @@ jobs:
       matrix:
         php: ['8.2', '8.3', '8.4']
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with: { php-version: '${{ matrix.php }}' }
       - run: composer install --no-interaction --no-progress
       - run: composer qa
