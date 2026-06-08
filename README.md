@@ -22,6 +22,7 @@ maintainers for the matching variant.)
 | `.github/workflows/ci.yml` | **Self-contained** quality gate — runs `composer qa` (CS-Fixer, PHPStan, Rector, PHPUnit) on PHP 8.2/8.3/8.4 on every push/PR (see [CI](#continuous-integration)). Swappable for a shared org-wide reusable workflow. |
 | `.github/workflows/dependabot-auto-merge.yml` | Auto-merges Dependabot patch/minor PRs once CI is green. |
 | `.github/workflows/release.yml` | On a version tag, builds a **clean** ZIP (via `git archive`, honoring `export-ignore`) and attaches it to the GitHub Release. |
+| `.github/workflows/sonar.yml`, `sonar-project.properties` *(optional)* | **Opt-in** SonarCloud security/SAST + quality dashboard — inert until a `SONAR_TOKEN` secret is set (see [Security analysis](#security-analysis-optional--sonarcloud)). |
 | `.github/dependabot.yml` | Weekly Composer + GitHub-Actions updates, grouped to cut noise. |
 | `.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `FUNDING.yml` | Community-health files. If your repo lives in an org that provides these centrally, you may delete the local copies to inherit the org-wide versions. |
 | `composer.json` | Module identity + the standard `require-dev` and `scripts`. **Rename** `name`/namespace for your module. |
@@ -120,6 +121,23 @@ jobs:
 >     with: { profile: core27, php_matrix: '["8.2","8.3","8.4"]' }
 >     secrets: inherit
 > ```
+
+## Security analysis (optional — SonarCloud)
+
+`ci.yml` already runs deep static analysis (PHPStan level 8 + strict rules), but it doesn't do
+**security-focused SAST** — taint tracking, injection/XSS, security hotspots. The baseline ships an
+**optional** SonarCloud scan for that, which is worth it because GitHub's free CodeQL doesn't support PHP.
+
+It's **opt-in and inert by default**: `.github/workflows/sonar.yml` skips itself (with a notice) until a
+`SONAR_TOKEN` secret exists — so it's a no-op for modules that don't use it and for fork PRs. It runs
+*alongside*, not instead of, `composer qa`.
+
+To enable it for a module:
+
+1. Import the repo into [SonarCloud](https://sonarcloud.io) (free for public projects).
+2. In `sonar-project.properties`, set `sonar.organization` and `sonar.projectKey` to match your SonarCloud project.
+3. Add a **`SONAR_TOKEN`** secret under *Settings → Secrets and variables → Actions*.
+4. *(Optional)* install the SonarCloud GitHub App for pull-request decoration.
 
 ## Release archives
 
