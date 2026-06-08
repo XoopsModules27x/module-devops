@@ -34,7 +34,7 @@ trait RequiresXoops
     protected function requiresXoops(): void
     {
         if (! defined('XOOPS_OVERLAY_INTEGRATION') || true !== XOOPS_OVERLAY_INTEGRATION) {
-            $this->markTestSkipped('No bootable XOOPS runtime; skipping integration test.');
+            static::markTestSkipped('No bootable XOOPS runtime; skipping integration test.');
         }
     }
 }

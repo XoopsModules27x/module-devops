@@ -19,7 +19,7 @@ maintainers for the matching variant.)
 
 | File / dir | Purpose |
 |---|---|
-| `.github/workflows/ci.yml` | **Thin** CI caller — delegates to the shared reusable workflow (see [CI](#continuous-integration)). Runs lint, PHPStan, CS-Fixer, Rector and PHPUnit on every push/PR. |
+| `.github/workflows/ci.yml` | **Self-contained** quality gate — runs `composer qa` (CS-Fixer, PHPStan, Rector, PHPUnit) on PHP 8.2/8.3/8.4 on every push/PR (see [CI](#continuous-integration)). Swappable for a shared org-wide reusable workflow. |
 | `.github/workflows/dependabot-auto-merge.yml` | Auto-merges Dependabot patch/minor PRs once CI is green. |
 | `.github/workflows/release.yml` | On a version tag, builds a **clean** ZIP (via `git archive`, honoring `export-ignore`) and attaches it to the GitHub Release. |
 | `.github/dependabot.yml` | Weekly Composer + GitHub-Actions updates, grouped to cut noise. |
@@ -91,24 +91,35 @@ with `cs:fix` / `rector:fix`, never auto-committed to your branch by CI.
 
 ## Continuous integration
 
-`ci.yml` is intentionally tiny — it calls a **shared reusable workflow** so CI
-behavior can be improved once for every module at once:
+`ci.yml` is a **self-contained** quality gate: it runs `composer qa` (CS-Fixer
+check → PHPStan → Rector dry-run → PHPUnit) across the supported PHP matrix on
+every push and pull request — so the baseline enforces its own standard out of the box.
 
 ```yaml
 jobs:
-  ci:
-    uses: XoopsModules27x/.github/.github/workflows/module-ci.yml@v1
-    with:
-      profile: core27
-      xoops_core_repo: https://github.com/XOOPS/XoopsCore27
-      xoops_core_ref: master
-      php_matrix: '["8.2", "8.3", "8.4"]'
-    secrets: inherit
+  qa:
+    strategy:
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ matrix.php }}' }
+      - run: composer install --no-interaction --no-progress
+      - run: composer qa
 ```
 
-> This requires the shared `module-ci.yml` workflow to exist in your org's
-> `.github` repository, tagged `v1`. If your org doesn't host it yet, ask the
-> maintainers — or replace `ci.yml` with a self-contained workflow.
+> **Want one shared workflow for the whole org instead?** Publish a reusable
+> `module-ci.yml` (tagged `v1`) in your org's `.github` repository, then replace the
+> job above with a one-line caller — improve CI once, for every module at once:
+>
+> ```yaml
+> jobs:
+>   ci:
+>     uses: XoopsModules27x/.github/.github/workflows/module-ci.yml@v1
+>     with: { profile: core27, php_matrix: '["8.2","8.3","8.4"]' }
+>     secrets: inherit
+> ```
 
 ## Release archives
 
