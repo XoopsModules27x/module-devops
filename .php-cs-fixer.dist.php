@@ -22,10 +22,11 @@ $paths = array_filter([
     __DIR__ . '/preloads',
     __DIR__ . '/src',
     __DIR__ . '/tests',
-], 'is_dir');
+], is_dir(...));
 
 $finder = (new PhpCsFixer\Finder())
     ->in($paths ?: [__DIR__])
+    ->exclude(['vendor', '.build', 'node_modules'])
     ->name('*.php')
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);

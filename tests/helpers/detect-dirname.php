@@ -29,7 +29,7 @@ if (is_file($versionFile)) {
 $moduleJson = $root . '/module.json';
 if (is_file($moduleJson)) {
     $data = json_decode((string) file_get_contents($moduleJson), true);
-    if (is_array($data) && !empty($data['dirname'])) {
+    if (is_array($data) && ! empty($data['dirname'])) {
         echo (string) $data['dirname'];
         exit(0);
     }

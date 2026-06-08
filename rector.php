@@ -30,7 +30,7 @@ $paths = array_filter([
     __DIR__ . '/preloads',
     __DIR__ . '/src',
     __DIR__ . '/tests',
-], 'is_dir');
+], is_dir(...));
 
 return RectorConfig::configure()
     ->withCache(__DIR__ . '/.build/rector')

@@ -26,21 +26,13 @@
         </testsuite>
     </testsuites>
 
-    <source>
-        <include>
-            <!-- Modern modules keep code in src/; legacy modules in class/. Include both;
-                 PHPUnit ignores whichever is absent. -->
-            <directory suffix=".php">src</directory>
-            <directory suffix=".php">class</directory>
-        </include>
-    </source>
-
-    <coverage>
-        <report>
-            <html outputDirectory=".build/coverage"/>
-            <text outputFile="php://stdout" showOnlySummary="true"/>
-        </report>
-    </coverage>
+    <!--
+        Coverage: the bare baseline ships no source code, so <source>/<coverage> are omitted to keep
+        `composer test` warning-free (failOnWarning is on — a non-existent <source> directory would
+        otherwise fail the run). Adopters: add your code dir(s) once they exist, e.g.:
+          <source><include><directory suffix=".php">class</directory></include></source>
+          <coverage><report><html outputDirectory=".build/coverage"/></report></coverage>
+    -->
 
     <php>
         <ini name="display_errors" value="1"/>
