@@ -1,0 +1,24 @@
+# XOOPS module DevOps baseline — xoops-overlay:profile=core27
+.idea
+.vscode
+.build
+build
+coverage
+
+# Tool caches
+.php-cs-fixer.cache
+.phpunit.result.cache
+.phpunit.cache
+.scannerwork
+
+# Local overrides of .dist configs
+phpstan.neon
+phpunit.xml
+psalm.xml
+
+# Dependencies & lock
+/vendor
+composer.lock
+
+# Overlay installer conflict artifacts
+*.overlay-new
